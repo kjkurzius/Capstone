@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "scale": 100,
+  "_comment": "Deterministic Opportunity Score for Eagle Eye Innovations. Every metric is a COUNTABLE number fetched from an official API. The LLM never invents the number — it only interprets it. Weights must sum to 1.0.",
+  "target": {
+    "company": "Eagle Eye Innovations",
+    "domain": "eeinnovationsltd.com",
+    "companies_house_number": "08631843",
+    "_verify": "08631843 is the assumed EEI Companies House number — CONFIRM the entity at developer.company-information.service.gov.uk before relying on it for company_health / company_filings."
+  },
+  "keyword_query": "drone OR RPAS OR UAV OR \"unmanned aircraft\" OR \"aerial survey\"",
+  "competitor_company_numbers": [],
+  "_competitor_note": "Populate competitor_company_numbers with verified UK competitor company numbers (8-digit). Left empty by default so the metric scores neutrally rather than on bad data.",
+  "categories": [
+    {
+      "key": "new_relevant_tenders",
+      "weight": 0.30,
+      "source": "contracts-finder + find-a-tender",
+      "metric": "count of notices published in last 7 days matching keyword_query",
+      "normalize": { "type": "linear", "zero_at": 0, "full_at": 10 }
+    },
+    {
+      "key": "defense_security_notices",
+      "weight": 0.20,
+      "source": "find-a-tender",
+      "metric": "count of last-7-day notices with CPV in defense/security range",
+      "cpv_prefixes": ["35"],
+      "normalize": { "type": "linear", "zero_at": 0, "full_at": 5 }
+    },
+    {
+      "key": "competitor_filings",
+      "weight": 0.15,
+      "source": "companies-house",
+      "metric": "count of new filings in last 30 days across competitor_company_numbers watchlist",
+      "normalize": { "type": "inverse_linear", "full_at": 0, "zero_at": 15 }
+    },
+    {
+      "key": "company_health",
+      "weight": 0.15,
+      "source": "companies-house",
+      "metric": "EEI company status active=full; any adverse flag (liquidation/insolvency/overdue) reduces",
+      "normalize": { "type": "health_flags" }
+    },
+    {
+      "key": "tender_value_signal",
+      "weight": 0.20,
+      "source": "contracts-finder + find-a-tender",
+      "metric": "sum of estimated values (GBP) of relevant last-7-day notices",
+      "normalize": { "type": "log", "zero_at": 0, "full_at": 5000000 }
+    }
+  ],
+  "alert_threshold_delta": 8
+}

@@ -1,0 +1,22 @@
+{
+  "_comment": "Rules the calendar specialist uses to propose meeting slots. All times in USER_TIMEZONE (see .env).",
+  "timezone": "Europe/London",
+  "working_hours": {
+    "monday":    { "start": "09:00", "end": "17:30" },
+    "tuesday":   { "start": "09:00", "end": "17:30" },
+    "wednesday": { "start": "09:00", "end": "17:30" },
+    "thursday":  { "start": "09:00", "end": "17:30" },
+    "friday":    { "start": "09:00", "end": "16:00" },
+    "saturday":  null,
+    "sunday":    null
+  },
+  "default_meeting_minutes": 30,
+  "buffer_minutes_between_meetings": 15,
+  "no_meeting_before": "09:30",
+  "no_meeting_after": "16:30",
+  "lunch_block": { "start": "12:30", "end": "13:30" },
+  "max_slots_to_propose": 3,
+  "min_slots_to_propose": 2,
+  "lookahead_business_days": 5,
+  "avoid_back_to_back": true
+}

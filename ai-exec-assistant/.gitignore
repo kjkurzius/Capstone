@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.graph-token-cache.json
+*.log
+
+# Generated daily snapshots are runtime artifacts, not source.
+data/scores/*.json
+# but keep the directory
+!data/scores/.gitkeep

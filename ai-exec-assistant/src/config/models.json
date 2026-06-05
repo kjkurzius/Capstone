@@ -1,0 +1,14 @@
+{
+  "_comment": "The ONLY place Claude model IDs live. Update here and nowhere else. Verified against the Anthropic model catalog (see SKILL claude-api / shared/models.md). Aliases are complete as-is — do NOT append date suffixes.",
+  "_verified_on": "2026-06-04",
+  "drafting": {
+    "model": "claude-sonnet-4-6",
+    "_role": "Sonnet-tier: email triage, draft replies, calendar extraction, opportunity-score interpretation/summary.",
+    "max_tokens": 4000
+  },
+  "classification": {
+    "model": "claude-haiku-4-5",
+    "_role": "Haiku-tier: fast, cheap urgency classification of inbound email.",
+    "max_tokens": 512
+  }
+}
