@@ -51,6 +51,7 @@ n8n-spec/      node-by-node build specs for the five workflows (assemble in the 
 - `npm run score` — run the scoring pipeline end-to-end against the live free APIs (add `--quiet` for composite+delta only, `--notify` to post to Teams).
 - `npm run auth` — interactive Microsoft Graph sign-in (caches the delegated refresh token for local dev).
 - `npm run test:graph` — `GET /me` smoke test.
+- `npm test` — offline unit tests (deterministic scoring math, CPV detection, keyword matching, OpenTable links).
 - `npm run typecheck` — TypeScript check.
 
 ## Dev vs production
