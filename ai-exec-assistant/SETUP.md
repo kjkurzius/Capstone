@@ -85,13 +85,68 @@ If `npm run score` shows 403s on Contracts Finder / Find a Tender from *your* ma
 
 ## 6. Production wiring in n8n Cloud
 
-1. Sign up at n8n.io (Pro). 
-2. Create credentials (see `n8n-spec/README.md` → "Credentials to create in n8n"):
-   - **Microsoft Outlook OAuth2** — same Entra app. n8n shows its **OAuth Redirect URL**; add that URL to the Entra app's redirect URIs (step 1.3). n8n then manages token refresh for you.
-   - **Header Auth — Anthropic** (`x-api-key` + `anthropic-version: 2023-06-01`).
-   - **Basic Auth — Companies House** (key as username, blank password).
-   - n8n **variables**: `TEAMS_WORKFLOW_URL`, `USER_NAME`, `USER_PHONE`, `USER_TIMEZONE`, `MODEL_DRAFTING=claude-sonnet-4-6`, `MODEL_CLASSIFY=claude-haiku-4-5`.
-3. Build the five workflows from `n8n-spec/` (node by node — don't paste raw JSON), then **export the JSON yourself** and **activate** them. The Schedule Triggers are what make it 24/7.
+1. Sign up at n8n.io (Pro).
+2. Create the four credentials below, with these exact field values, then the variables.
+
+### Credential A — Microsoft (Graph: mail + calendar)
+
+Credentials → **New** → search **"Microsoft OAuth2 API"** (generic — works for every Graph HTTP Request node *and* the built-in Microsoft Outlook node; use this one so calendar calls aren't blocked by a narrower scope set).
+
+| Field | Value |
+|---|---|
+| Grant Type | Authorization Code |
+| Authorization URL | `https://login.microsoftonline.com/<TENANT_ID>/oauth2/v2.0/authorize` |
+| Access Token URL | `https://login.microsoftonline.com/<TENANT_ID>/oauth2/v2.0/token` |
+| Client ID | your Entra **Application (client) ID** |
+| Client Secret | your Entra client secret **Value** |
+| Scope | `offline_access User.Read Mail.Read Mail.ReadWrite Mail.Send Calendars.ReadWrite` |
+| Auth | Header / Body (leave n8n default) |
+
+n8n shows an **OAuth Redirect URL** like `https://<your>.app.n8n.cloud/rest/oauth2-credential/callback`. Copy it into the Entra app → **Authentication** → **Add a redirect URI** (Web). Then click **Connect / Sign in** in n8n and approve. n8n stores + auto-refreshes the token from here on.
+
+### Credential B — Anthropic (Claude HTTP nodes)
+
+Credentials → **New** → **Header Auth**.
+
+| Field | Value |
+|---|---|
+| Name | `x-api-key` |
+| Value | your `ANTHROPIC_API_KEY` |
+
+(`anthropic-version: 2023-06-01` is added as a static header on each Claude HTTP Request node — Header Auth only carries the key.)
+
+### Credential C — Companies House
+
+Credentials → **New** → **Basic Auth**.
+
+| Field | Value |
+|---|---|
+| User | your Companies House API key |
+| Password | *(leave blank)* |
+
+### Credential D — Teams (Power Automate Workflow)
+
+No credential object needed — the URL is the secret. Store it as a variable (below) and POST to it from an HTTP Request node.
+
+### Variables (Settings → Variables, or instance env)
+
+```
+TEAMS_WORKFLOW_URL = <Power Automate HTTP URL from step 4>
+USER_NAME          = <full name>
+USER_PHONE         = <phone>
+USER_TIMEZONE      = Europe/London
+MODEL_DRAFTING     = claude-sonnet-4-6
+MODEL_CLASSIFY     = claude-haiku-4-5
+```
+
+3. Build the five workflows from `n8n-spec/` (node by node — don't paste raw JSON), wiring each node to the credential above that matches its `n8n-spec` entry. Then **export the JSON yourself** and **activate** them. The Schedule Triggers are what make it 24/7.
+
+### Connection smoke tests inside n8n (before activating)
+
+- **Microsoft:** a one-node HTTP Request GET `https://graph.microsoft.com/v1.0/me` with Credential A → should return your profile.
+- **Anthropic:** HTTP Request POST `https://api.anthropic.com/v1/messages` with Credential B + header `anthropic-version: 2023-06-01`, body `{"model":"{{$vars.MODEL_CLASSIFY}}","max_tokens":16,"messages":[{"role":"user","content":"ping"}]}` → 200.
+- **Companies House:** HTTP Request GET `https://api.company-information.service.gov.uk/company/08631843` with Credential C → company JSON.
+- **Teams:** HTTP Request POST `{{$vars.TEAMS_WORKFLOW_URL}}` with body `{"text":"n8n connection test"}` → 202 and a message in the channel.
 
 ---
 
