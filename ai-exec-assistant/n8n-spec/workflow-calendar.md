@@ -27,7 +27,7 @@ Invoked by `workflow-email-monitor` (Execute Workflow node) with the message con
 - (Reference impl: `graph-client.ts` → `listCalendarEvents`.)
 
 ### 6. Propose slots (Code)
-- Type: **Code**. Pure logic — no LLM. Using `calendar-rules.json`:
+- Type: **Code**. Pure logic — no LLM. **Mirror `src/utils/calendar-planner.ts` `proposeSlots()`** (the local runner uses the same function, so keep them in sync). Using `calendar-rules.json`:
   - Iterate business days in the window; within `working_hours`, skip the `lunch_block`, respect `no_meeting_before`/`no_meeting_after`.
   - Exclude times overlapping existing events ± `buffer_minutes_between_meetings`.
   - If `avoid_back_to_back`, drop slots adjacent to an existing event.

@@ -10,6 +10,7 @@
   "scripts": {
     "test": "node --import tsx --test tests/*.test.ts",
     "score": "tsx src/scoring/opportunity-score.ts",
+    "triage": "tsx src/assistant/triage.ts",
     "auth": "tsx src/utils/graph-client.ts --auth",
     "test:graph": "tsx src/utils/graph-client.ts --whoami",
     "typecheck": "tsc --noEmit",

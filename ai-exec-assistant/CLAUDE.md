@@ -38,7 +38,8 @@ Production AI Executive Assistant. Two subsystems sharing one codebase. **Claude
 
 ```
 src/config/    models.json (model IDs), calendar-rules.json, scoring-weights.json
-src/utils/     graph-client.ts, claude-client.ts, teams-notifier.ts, opentable-linker.ts
+src/utils/     graph-client.ts, claude-client.ts, teams-notifier.ts, opentable-linker.ts, calendar-planner.ts (deterministic slot proposal)
+src/assistant/ triage.ts (local Subsystem A runner: email classify/draft + slot proposal + booking link)
 src/prompts/   urgency-classifier (Haiku), email-triage / calendar-extract / opportunity-summary (Sonnet)
 src/scoring/   opportunity-score.ts (orchestrator), scoring-model.ts (deterministic math),
                report-generator.ts, sources/ (contracts-finder, find-a-tender, companies-house)
@@ -49,6 +50,7 @@ n8n-spec/      node-by-node build specs for the five workflows (assemble in the 
 ## Commands
 
 - `npm run score` — run the scoring pipeline end-to-end against the live free APIs (add `--quiet` for composite+delta only, `--notify` to post to Teams).
+- `npm run triage` — local Subsystem A runner: fetch >4h-unanswered mail, classify (Haiku), draft (Sonnet), propose slots / booking links. Dry-run by default (`--create-drafts` makes Outlook drafts, still never sends; `--notify` posts urgent items to Teams). Needs `npm run auth` + `ANTHROPIC_API_KEY`.
 - `npm run auth` — interactive Microsoft Graph sign-in (caches the delegated refresh token for local dev).
 - `npm run test:graph` — `GET /me` smoke test.
 - `npm test` — offline unit tests (deterministic scoring math, CPV detection, keyword matching, OpenTable links).
