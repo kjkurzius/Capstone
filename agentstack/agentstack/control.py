@@ -17,6 +17,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from .escalation import Escalation, Klass, Queue
 from .guards import Governor, GuardViolation
 from .jev import JevClient, Verdict
 from .ledger import Ledger
@@ -47,6 +48,7 @@ class Fleet:
         tool_schemas: dict[str, list[dict]],
         execute: Callable[[str, dict], Any],
         deterministic: Callable[[str], str | None] = lambda _: None,
+        queue: Queue | None = None,
     ):
         self._roster = roster
         self._jev = jev
@@ -56,6 +58,7 @@ class Fleet:
         self._schemas = tool_schemas
         self._execute = execute
         self._deterministic = deterministic
+        self._queue = queue
 
     # --- entry point --------------------------------------------------------
 
@@ -195,7 +198,21 @@ class Fleet:
         return Outcome(task_id, disposition, text, confidence, usd, seconds, reason)
 
     def _escalate(self, task_id: str, text: str, confidence: float, usd: float,
-                  seconds: float, reason: str, agent: str = "") -> Outcome:
+                  seconds: float, reason: str, agent: str = "",
+                  klass: Klass = Klass.LOW_CONFIDENCE) -> Outcome:
+        if self._queue is not None:
+            # A COMMITMENT binds the company, so it carries no default and
+            # never times out. Everything else resolves itself on silence.
+            commitment = klass is Klass.COMMITMENT
+            self._queue.raise_(Escalation(
+                task_id=task_id, klass=klass, agent=agent,
+                summary=reason,
+                proposed="" if commitment else "hold and do not ship",
+                alternative="ship as drafted",
+                evidence={"confidence": round(confidence, 3),
+                          "usd": round(usd, 4),
+                          "preview": text[:280]},
+            ))
         return self._finish(task_id, "escalated", text, confidence,
                             usd, seconds, reason, agent)
 

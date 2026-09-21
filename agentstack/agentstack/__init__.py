@@ -10,14 +10,18 @@ See docs/ARCHITECTURE.md.
 """
 
 from .control import Fleet, Outcome
+from .escalation import Escalation, Klass, Queue, digest
 from .guards import Governor, GuardViolation, Limits
 from .jev import Choice, JevClient, Noul, Score, Verdict
 from .ledger import Ledger
+from .plan import InvalidPlan, Plan, Step, validate
 from .roster import ROSTER, Budget, Subagent, Thresholds
 from .worker import ClaudeWorker
 
 __all__ = [
     "Fleet", "Outcome", "Governor", "GuardViolation", "Limits",
+    "Escalation", "Klass", "Queue", "digest",
+    "InvalidPlan", "Plan", "Step", "validate",
     "Choice", "JevClient", "Noul", "Score", "Verdict", "Ledger",
     "ROSTER", "Budget", "Subagent", "Thresholds", "ClaudeWorker",
 ]
