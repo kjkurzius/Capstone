@@ -15,6 +15,10 @@ from .guards import Governor, GuardViolation, Limits
 from .jev import Choice, JevClient, Noul, Score, Verdict
 from .ledger import Ledger
 from .plan import InvalidPlan, Plan, Step, validate
+from .slack import (
+    AuthError, Notifier, ReplyHandler, SlackConfig, SlackTransport,
+    verify_signature,
+)
 from .roster import ROSTER, Budget, Subagent, Thresholds
 from .worker import ClaudeWorker
 
@@ -22,6 +26,8 @@ __all__ = [
     "Fleet", "Outcome", "Governor", "GuardViolation", "Limits",
     "Escalation", "Klass", "Queue", "digest",
     "InvalidPlan", "Plan", "Step", "validate",
+    "AuthError", "Notifier", "ReplyHandler", "SlackConfig",
+    "SlackTransport", "verify_signature",
     "Choice", "JevClient", "Noul", "Score", "Verdict", "Ledger",
     "ROSTER", "Budget", "Subagent", "Thresholds", "ClaudeWorker",
 ]

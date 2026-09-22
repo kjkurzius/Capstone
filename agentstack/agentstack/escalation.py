@@ -174,6 +174,18 @@ class Queue:
             for r in rows
         ]
 
+    def unnotified(self) -> list[Escalation]:
+        """Open items not yet delivered. Keeps a digest from repeating itself."""
+        ids = {r[0] for r in self._db.execute(
+            "SELECT id FROM escalations WHERE resolved_at IS NULL "
+            "AND notified_at IS NULL").fetchall()}
+        return [e for e in self.open_items() if e.id in ids]
+
+    def mark_notified(self, esc_id: str, now: float | None = None) -> None:
+        self._db.execute("UPDATE escalations SET notified_at=? WHERE id=?",
+                         (now or time.time(), esc_id))
+        self._db.commit()
+
     def resolve(self, esc_id: str, resolution: str, note: str = "") -> None:
         if resolution not in ("proposed", "alternative", "custom", "timeout"):
             raise EscalationError(f"unknown resolution {resolution!r}")

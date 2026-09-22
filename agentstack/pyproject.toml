@@ -10,6 +10,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+slack = ["slack_sdk>=3.27"]   # Socket Mode client
 
 [build-system]
 requires = ["setuptools>=68"]
