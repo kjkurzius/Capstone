@@ -95,6 +95,26 @@ That single constraint is what keeps the system auditable, because every
 executed step traces to a validated plan rather than to something a model
 said to another model.
 
+Implemented in `planner.py` and `plan.py`. Two things that fall out of
+building it and were not obvious from the design:
+
+**Structured outputs guarantee shape, not validity.** A reply that conforms
+perfectly to the schema can still name an agent that does not exist, ask for
+more budget than an agent has, or describe a dependency cycle. Validation is
+not belt-and-braces on top of the schema — it is the part that does the work.
+
+**A rejected plan is re-asked, never repaired.** The validation error goes
+back verbatim and the planner returns a corrected plan. Patching it in code
+would produce a plan the model never endorsed, which defeats the point of
+validating: what runs is exactly what was proposed and checked. Attempts are
+bounded, and a planner that cannot converge raises rather than spending.
+
+**Execution halts on the first step that does not ship.** Every later step
+was planned assuming the earlier ones succeeded, so continuing past an
+escalation means acting on an assumption nobody has confirmed. The halt
+raises a CONFLICT — plan and reality disagree, which usually means the plan
+was wrong rather than the step was.
+
 ### Jev is a sensor, not a node
 
 Worth stating explicitly, because it matters legally as much as technically:

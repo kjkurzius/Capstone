@@ -15,11 +15,16 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Sequence
 
+# Both fields are required so the schema stays strict. `blocked` is the empty
+# string when a plan exists, and a one-sentence reason when the task cannot be
+# done with the agents available — a planner that must either plan or decline
+# is far less likely to invent an agent than one that can only plan.
 PLAN_SCHEMA = {
     "type": "object",
     "additionalProperties": False,
-    "required": ["steps"],
+    "required": ["steps", "blocked"],
     "properties": {
+        "blocked": {"type": "string"},
         "steps": {
             "type": "array",
             "maxItems": 12,
@@ -42,6 +47,14 @@ PLAN_SCHEMA = {
 
 class InvalidPlan(ValueError):
     """The plan is rejected whole. Never partially executed."""
+
+
+class PlannerDeclined(RuntimeError):
+    """The planner says the task cannot be done with the agents available.
+
+    Not an error. A planner that can decline produces fewer plans that almost
+    work, and "almost works" is the expensive failure.
+    """
 
 
 @dataclass(frozen=True)
@@ -82,6 +95,10 @@ def validate(raw: dict, roster: dict, *, max_plan_usd: float) -> Plan:
     that does not exist, a budget that exceeds the cap, a dependency on a step
     that was never defined, or a cycle that would run forever.
     """
+    blocked = (raw.get("blocked") or "").strip()
+    if blocked:
+        raise PlannerDeclined(blocked)
+
     raw_steps = raw.get("steps")
     if not isinstance(raw_steps, list) or not raw_steps:
         raise InvalidPlan("plan has no steps")

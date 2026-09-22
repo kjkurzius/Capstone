@@ -14,7 +14,8 @@ from .escalation import Escalation, Klass, Queue, digest
 from .guards import Governor, GuardViolation, Limits
 from .jev import Choice, JevClient, Noul, Score, Verdict
 from .ledger import Ledger
-from .plan import InvalidPlan, Plan, Step, validate
+from .plan import InvalidPlan, Plan, PlannerDeclined, Step, validate
+from .planner import Planner, PlannerFailed, PlanExecutor, PlanRun
 from .slack import (
     AuthError, Notifier, ReplyHandler, SlackConfig, SlackTransport,
     verify_signature,
@@ -25,7 +26,8 @@ from .worker import ClaudeWorker
 __all__ = [
     "Fleet", "Outcome", "Governor", "GuardViolation", "Limits",
     "Escalation", "Klass", "Queue", "digest",
-    "InvalidPlan", "Plan", "Step", "validate",
+    "InvalidPlan", "Plan", "PlannerDeclined", "Step", "validate",
+    "Planner", "PlannerFailed", "PlanExecutor", "PlanRun",
     "AuthError", "Notifier", "ReplyHandler", "SlackConfig",
     "SlackTransport", "verify_signature",
     "Choice", "JevClient", "Noul", "Score", "Verdict", "Ledger",
