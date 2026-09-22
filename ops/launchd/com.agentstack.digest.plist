@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.agentstack.digest</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/agentstack/venv/bin/python</string>
+        <string>-m</string>
+        <string>agentstack.runner</string>
+        <string>--digest</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/opt/agentstack</string>
+
+    <!-- Twice a day, deliberately. Interrupt an operator twenty times a day
+         and they stop reading and start clicking. -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Hour</key><integer>8</integer>
+            <key>Minute</key><integer>30</integer>
+        </dict>
+        <dict>
+            <key>Hour</key><integer>16</integer>
+            <key>Minute</key><integer>30</integer>
+        </dict>
+    </array>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>StandardOutPath</key>
+    <string>/opt/agentstack/logs/digest.log</string>
+    <key>StandardErrorPath</key>
+    <string>/opt/agentstack/logs/digest.log</string>
+</dict>
+</plist>

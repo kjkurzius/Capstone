@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.agentstack.backup</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/agentstack/ops/bin/backup.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key><integer>3</integer>
+        <key>Minute</key><integer>0</integer>
+    </dict>
+
+    <!-- If the machine was asleep or off at 03:00, run at next wake rather
+         than silently skipping the night. -->
+    <key>StartInterval</key>
+    <integer>0</integer>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+    <key>StandardOutPath</key>
+    <string>/opt/agentstack/logs/backup.log</string>
+    <key>StandardErrorPath</key>
+    <string>/opt/agentstack/logs/backup.log</string>
+</dict>
+</plist>

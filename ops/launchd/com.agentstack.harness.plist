@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.agentstack.harness</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/agentstack/venv/bin/python</string>
+        <string>-m</string>
+        <string>agentstack.runner</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>/opt/agentstack</string>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- Restart on a crash or a non-zero exit, but let a clean exit(0) stand:
+         that is the deliberate-shutdown path, and without it there is no way
+         to stop the harness except to unload the job. -->
+    <key>KeepAlive</key>
+    <dict>
+        <key>Crashed</key>
+        <true/>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+
+    <!-- A bug that kills the process at startup becomes a restart loop that
+         burns CPU and floods the log. 30s makes the loop visible instead of
+         catastrophic; healthcheck.sh counts restarts and escalates. -->
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+
+    <key>ProcessType</key>
+    <string>Background</string>
+
+    <key>StandardOutPath</key>
+    <string>/opt/agentstack/logs/harness.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>/opt/agentstack/logs/harness.err.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>AGENTSTACK_ENV</key>
+        <string>production</string>
+        <key>PGHOST</key>
+        <string>127.0.0.1</string>
+        <key>PGDATABASE</key>
+        <string>agentstack</string>
+        <key>PGUSER</key>
+        <string>agentstack_app</string>
+        <!-- No secrets here. This file is world-readable; the process reads
+             credentials from the Keychain at startup via bin/secrets.sh. -->
+    </dict>
+</dict>
+</plist>
